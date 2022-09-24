@@ -19,5 +19,6 @@ from webapp import views
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path("webapp/", include("webapp.urls"))
+    path("webapp/", include("webapp.urls")),
+    path("crm/", include("crm.urls"))
 ]

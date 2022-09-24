@@ -24,4 +24,11 @@ class Package(APIView):
 
         return SuccessResponse(data = data, message="Packages")
 
+class Labs(APIView):
+    def get(self, request):
+        query = request.query_params
+        data = DB.labs.find({"order":{"$ne":None}})
+
+        return SuccessResponse(data = data, message="Labs")
+
 
