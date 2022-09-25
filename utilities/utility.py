@@ -43,3 +43,13 @@ class DatetimeUtils():
         return datetime.now()
 
 
+class GeneratorUtils():
+
+    @classmethod
+    def get_booking_id(cls, month=1, year=2020):
+        
+        chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        nums = '0123456789'
+        return "TW-"+ ''.join([random.choice(chars) for i in range(6)]+[random.choice(nums) for i in range(4)])
+        
+

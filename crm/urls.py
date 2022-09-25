@@ -3,4 +3,5 @@ from django.urls import path
 from crm import views
 urlpatterns = [
     path('create/', views.CreateUser.as_view()),
+    path('booking/', views.Booking.as_view()),
 ]
