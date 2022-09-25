@@ -52,4 +52,9 @@ class GeneratorUtils():
         nums = '0123456789'
         return "TW-"+ ''.join([random.choice(chars) for i in range(6)]+[random.choice(nums) for i in range(4)])
         
+    @classmethod
+    def get_user_id(cls, month=1, year=2020):
+        
+        return uuid.uuid4().hex
+        
 
