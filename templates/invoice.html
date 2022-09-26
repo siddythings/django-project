@@ -1,0 +1,277 @@
+<html>
+{% load static %}
+
+<head>
+    <title>
+
+    </title>
+    <style>
+        .billing-table {
+            border-collapse: collapse;
+        }
+
+        .billing-table td, th {
+            padding: 3px;
+            padding-top: 7px;
+            padding-bottom: 0;
+        }
+
+         .billing-table1 {
+            border-collapse: collapse;
+        }
+
+        .billing-table1 td, th {
+            padding-top: 7px;
+        }
+        body {
+            font-size: 13px;
+            font-family: 'Lato', sans-serif;
+        }
+        .estimate-details td, th {
+            border-radius: 20px;
+            border: solid 1px lightgrey;
+            /* width: 150%; */
+        }
+        .page-heading {
+            font-size: 2rem;
+            /* font-size: 200px; */
+        }
+        .concrete-background {
+            background-color: #F2F2F2;
+        }
+        ._1-0-0 {
+            background-color: #ccffcc;
+        }
+        ._0-1-0 {
+            background-color: #ffd6cc;
+        }
+        ._0-0-1 {
+            background-color: #ffffb3;
+        }
+        ._1-0-0-1 {
+            background-color: #e6ffe6;
+        }
+        ._0-1-0-1 {
+            background-color: #ffebe6;
+        }
+        ._0-0-1-1 {
+            background-color: #ffffcc;
+        }
+        .page-break{
+            page-break-after: always;
+        }
+        .order-summary {
+            background-color: #1d1d1d;
+            color: #ffffff;
+            padding: 5px;
+        }
+        .package-container td {
+            border: 1px solid #ddd;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+</head>
+
+<body>
+    <div style="margin: 5px; margin-bottom: 3rem; ">
+        <table class="billing-table" style="width: 100%; height: auto;">
+            <tr style="display:flex; align-items:center;justify-content:center">
+                    <td colspan="6" style="border-right: none">
+                        <br/>
+                        <div style="font-size: 2.2em; font-weight: bold;padding-top:50px;text-align:left">{{data.name}}
+                        </div>
+                    </td>
+                    <td style="border-left: none;" colspan="4">
+                        <img src="https://cdn.logo.com/hotlink-ok/logo-social.png" alt="Logo" style="width:220px; height: 60px;text-align:right">
+                        <div style="font-size: 2.2em; font-weight: bold;padding-top:3px;text-align:right">{{data.bill_name}}</div>
+                    </td>
+            </tr>
+        </table>
+        <table class="billing-table estimate-details"  style="width: 100%; height: auto">
+        <tr>
+            <tr>
+                <td colspan="9" style="border-bottom:none"><b></b></td>
+                <td colspan="9" style="border-bottom:none"><b>Invoice Number:</b> {{data.invoice_number}}</td>
+            </tr>
+            <tr>
+                <td colspan="9" style="border-bottom:none; border-top:none">{{data.name}}, {{data.workshop_address}}</td>
+                <td  colspan="9" style="border-bottom:none; border-top:none"><b>Invoice Date:</b>{{data.created_at}}</td>
+                <tr>
+                {% if data.gstin %}
+                    <td colspan="9" style="border-bottom:none; border-top:none"><b>GSTIN No:</b> {{data.gstin}}</td>
+                {% else %}
+                    <td colspan="9" style="border-bottom:none; border-top:none"><b</b></td>
+                {% endif %}
+                <td colspan="9" style="border-bottom:none; border-top:none"><b>Order Date:</b>{{data.created_at}}</td>
+
+            </tr>
+        </tr>
+        
+            <tr>
+                {% if data.customer_details.address %}
+                    <td colspan="9"style="border-bottom:none"><b>Bill To:</b></td>
+                {% else %}
+                    <td colspan="18"style="border-bottom:none"><b>Bill To:</b></td>
+                {% endif %}
+                {% if data.customer_details.address %}
+                    <td colspan="9" style="border-bottom:none"><b>Bill To:</b></td>
+                {% endif %}
+            </tr>
+            <tr>
+                {% if data.customer_details.address %}
+                    <td colspan="9" style="border-bottom:none; border-top:none"><b>{{data.customer_details.name}}</b><br/>{{data.customer_details.address}}</td>
+                {% else %}
+                    <td colspan="18" style="border-bottom:none; border-top:none"><b>{{data.customer_details.name}}</b></td>
+                {% endif %}
+                {% if data.customer_details.address %}
+                    <td colspan="9" style="border-bottom:none; border-top:none">{{data.customer_details.address}}</td>
+                {% endif %}
+            </tr>
+            {% if data.customer_details.email %}
+            <tr>
+                {% if data.customer_details.email %}
+                    <td colspan="9" style="border-bottom:none; border-top:none"><b>E-Mail:</b>{{data.customer_details.email}}</td>
+                    <td colspan="9" style="border-bottom:none; border-top:none"></td>
+                    {% else %}
+                    <td colspan="9" style="border-bottom:none; border-top:none"></td>
+                    <td colspan="9" style="border-bottom:none; border-top:none"></td>
+                {% endif %}
+            </tr>
+            {% endif %}
+
+            {% if data.customer_details.gstin %}
+            <tr>
+                {% if data.customer_details.gstin %}
+                    <td colspan="9" style="border-top:none"><b>GSTIN No:</b> {{data.customer_details.gstin}}</td>
+                    <td colspan="9" style="border-top:none"><b>GSTIN No:</b> {{data.customer_details.gstin}}</td>
+                    {% else %}
+                    <td colspan="9" style="border-top:none"></td>
+                    <td colspan="9" style="border-top:none"></td>
+                {% endif %}
+            </tr>
+            {% endif %}
+            {% if data.bill_type != "Non Tax Invoice" %}
+                <tr>
+                    <th colspan="1"><b>Sr.No</b></th>
+                    <th colspan="2"><b>HSN</b></th>
+                    <th colspan="2"><b>Description</b></th>
+                    <th colspan="2"><b>Unit Price</b></th>
+                    <th colspan="2"><b>Qty</b></th>
+                    <th colspan="2"><b>Price</b></th>
+                    <th colspan="2"><b>Discount</b></th>
+                    <th colspan="2"><b>Taxable Value</b></th>
+                    <th colspan="1"><b>Tax</b></th>
+                    <th colspan="2"><b>Total</b></th>
+                </tr>
+                {% for obj in data.services%}
+                    <tr>
+                        <td colspan="1" style="text-align:center">{{obj.s_no}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.hsn}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.service_name}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.price_per_quantity}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.quantity}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.total_unit_price}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.discount_per_quantity}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.taxable}}</td>
+                        <td colspan="1" style="text-align:center">{{obj.tax_rate}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.total}}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <th colspan="2" style="text-align:center"><b>Sr.No</b></th>
+                    <th colspan="2" style="text-align:center"><b>HSN</b></th>
+                    <th colspan="2" style="text-align:center"><b>Description</b></th>
+                    <th colspan="3" style="text-align:center"><b>Unit Price</b></th>
+                    <th colspan="2" style="text-align:center"><b>Discount</b></th>
+                    <th colspan="2" style="text-align:center"><b>Qty</b></th>
+                    <th colspan="2" style="text-align:center"><b>Price</b></th>
+                    <th colspan="3" style="text-align:center"><b>Total</b></th>
+                </tr>
+                {% for obj in data.services%}
+                    <tr>
+                        <td colspan="2" style="text-align:center">{{obj.s_no}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.hsn}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.service_name}}</td>
+                        <td colspan="3" style="text-align:center">{{obj.price_per_quantity}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.discount_per_quantity}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.quantity}}</td>
+                        <td colspan="2" style="text-align:center">{{obj.total_unit_price}}</td>
+                        <td colspan="3" style="text-align:center">{{obj.total}}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        <tr>
+            {% if data.bill_type != "Non Tax Invoice" %}
+                <td colspan="5"><b>Total</b></td>
+                <td colspan="2"></td>
+                <td colspan="2" style="text-align:center">{{data.total_q}}</td>
+                <td colspan="2"></td>
+                <td colspan="2" style="text-align:center">{{data.discount}}</td>
+                <td colspan="2" style="text-align:center">{{data.taxable_value}}</td>
+                <td colspan="1" style="text-align:center">{{data.total_tax}}</td>
+                <td colspan="2" style="text-align:center">{{data.total}}</td>
+            {% else %}
+                <td colspan="6"><b>Total</b></td>
+                <td colspan="3"></td>
+                <td colspan="2" style="text-align:center">{{data.discount}}</td>
+                <td colspan="2" style="text-align:center">{{data.total_q}}</td>
+                <td colspan="2" style="text-align:center"></td>
+                <td colspan="3" style="text-align:center">{{data.total}}</td>
+            {% endif %}
+        </tr>
+        {% if data.bill_type != "Non Tax Invoice" %}
+            <tr>
+                <td colspan="9">Taxable Amount</td>
+                <td colspan="9" style="text-align:right">Rs. {{data.taxable_value}}</td>
+            </tr>
+            <tr>
+                <td colspan="9">Discount Amount</td>
+                <td colspan="9" style="text-align:right">Rs. {{data.discount}}</td>
+            </tr>
+            <tr>
+                <td colspan="9">Total Tax</td>
+                <td colspan="9" style="text-align:right">Rs. {{data.total_tax}}</td>
+            </tr>
+            <tr>
+                <td colspan="9">Total Tax (in words)</td>
+                <td colspan="9" style="text-align:right">{{data.taxable_value_number}}</td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td colspan="9">Invoice Total</td>
+            <td colspan="9" style="text-align:right">Rs. {{data.total}}</td>
+        </tr>
+        <tr>
+            <td colspan="9">Discount Total/Flat Discount</td>
+            <td colspan="9" style="text-align:right">Rs. {{ data.flat_discount }}</td>
+        </tr>
+        <tr>
+            <td colspan="9"><b>Invoice Total (in words)</b></td>
+            <td colspan="9" style="text-align:right"><b>{{data.total_number}}</b></td>
+        </tr>
+        <tr>
+            <td colspan="9" style=" padding-right:10px;padding-bottom:5px"><b>DECLARATION</b></td>
+                <td colspan="9" style=" text-align:left;padding-bottom:5px;padding-left:10px;">
+                    <span style="margin: 0px;padding: 0px;"><b></b></span><br>
+                    <span style="margin-top: 10px;padding-top: 15px;">Authorized Signatory</span>
+                </td>
+        </tr>
+        </table>
+        <table class="billing-table estimate-details" style="width: 100%; height: auto">
+            <tr>
+                <td colspan="18" style="border-bottom:none"><b>Order Remarks</b></td>
+            </tr>
+            <tr>
+                <td colspan="18" style="border-top:none">Na</td>
+            </tr>
+        </table>
+        
+
+    {% block content %}
+    {% endblock %}
+
+
+</body>
+
+</html>

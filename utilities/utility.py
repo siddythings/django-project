@@ -19,7 +19,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from pathlib import Path
 from datetime import date, datetime, timedelta, time
-
+from application import settings
 CACHE_TTL = 60 * 60 *24
 
 
@@ -34,6 +34,25 @@ def date_string_to_date_time(date, end_time=False):
         date = date + timedelta(hours=23, minutes=59, seconds=59)
     return date
 
+
+def fetch_resources(uri, rel):
+        """
+        Callback to allow xhtml2pdf/reportlab to retrieve Images,Stylesheets, etc.
+        `uri` is the href attribute from the html link element.
+        `rel` gives a relative path, but it's not used here.
+
+        """
+        path = ''
+        if uri.startswith("http://") or uri.startswith("https://"):
+            return uri
+        elif uri.startswith("/media/"):
+            # path = settings.MEDIA_ROOT + uri.replace('/media/', 'media/')
+            path = os.path.join(settings.MEDIA_ROOT,
+                                uri.replace("/media/", ""))
+        elif uri.startswith("/static/"):
+            path = os.path.join(settings.STATIC_ROOT,
+                                uri.replace("/static/", ""))
+        return path
 
 
 class DatetimeUtils():

@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from rest_framework.response import Response
+from django.http import HttpResponse, JsonResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 from rest_framework.views import APIView
 from application.responses import SuccessResponse, NoContentResponse, UnprocessableEntityResponse, \
     BadRequestResponse
@@ -9,7 +12,7 @@ from bson import ObjectId
 import pymongo
 
 from application.settings import DB
-from utilities.utility import DatetimeUtils, GeneratorUtils
+from utilities.utility import DatetimeUtils, GeneratorUtils, fetch_resources
 
 class CreateUser(APIView):
     def post(self, request):
@@ -61,3 +64,16 @@ class Booking(APIView):
                 "publicFileUrl": "https://web.orangehealth.in/invoice/227041?token=c7e18b72-86ec-4b69-85b8-2c1080e33099"
 		}})
         return SuccessResponse(data= booking_details, message="Booking Details")
+
+class BookingInvoice(APIView):
+    def get(self, request):
+        requested_data = request.query_params
+        
+        template = get_template('invoice.html')
+        html = template.render({'data': ""})
+
+        response = HttpResponse(content_type="application/pdf")
+        response['Content-Disposition'] = \
+            f'attachment; filename=  "{"".join("bill_name".split())}_.pdf"'
+        pisa.CreatePDF(html, dest=response, link_callback=fetch_resources)
+        return response
