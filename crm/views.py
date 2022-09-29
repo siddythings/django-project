@@ -11,7 +11,7 @@ import bson
 from bson import ObjectId
 import pymongo
 
-from application.settings import DB
+from application.settings import BASE_URL, DB
 from utilities.utility import DatetimeUtils, GeneratorUtils, fetch_resources
 
 class CreateUser(APIView):
@@ -51,29 +51,36 @@ class Booking(APIView):
     def get(self, request):
         query = request.query_params
         booking_id = query.get("booking_id")
+        mobile_no = query.get("mobile_no")
         
-        if not booking_id:
-            return BadRequestResponse(message="Booking ID not Found!")
-
-        booking_details = DB.bookings.find_one({"booking_id":booking_id})
+        if not booking_id and not mobile_no:
+            return BadRequestResponse(message="Booking not Found!")
+        
+        if booking_id:
+            booking_details = list(DB.bookings.find({"booking_id":booking_id}))
+        
+        if mobile_no:
+            booking_details = list(DB.bookings.find({"customer_details.customer_number":mobile_no}))
+        
         if booking_details:
-            booking_details.update({"invoices":{
-                "fileName": "werty_invoice_20220925111016",
-                "fileReference": "werty_invoice_20220925111016.pdf",
-                "fileUrl": "https://oms-orders.s3-ap-south-1.amazonaws.com/werty_invoice_20220925111016.pdf",
-                "publicFileUrl": "https://web.orangehealth.in/invoice/227041?token=c7e18b72-86ec-4b69-85b8-2c1080e33099"
-		}})
+            for obj in booking_details:
+                obj.update({"invoices":{
+                    "fileName": "testoin_invoice_{booking_id}".format(booking_id=obj.get("booking_id")),
+                    "fileUrl": BASE_URL + "/crm/invoice/?booking_id={booking_id}".format(booking_id=obj.get("booking_id")),
+            }})
         return SuccessResponse(data= booking_details, message="Booking Details")
 
 class BookingInvoice(APIView):
     def get(self, request):
         requested_data = request.query_params
+        if not requested_data.get("booking_id"):
+            return BadRequestResponse(message="Booking ID not Found!")
         
         template = get_template('invoice.html')
         html = template.render({'data': ""})
 
         response = HttpResponse(content_type="application/pdf")
         response['Content-Disposition'] = \
-            f'attachment; filename=  "{"".join("bill_name".split())}_.pdf"'
+            f'attachment; filename=  "{"".join("testoin_invoice_{booking_id}".split())}.pdf"'
         pisa.CreatePDF(html, dest=response, link_callback=fetch_resources)
         return response

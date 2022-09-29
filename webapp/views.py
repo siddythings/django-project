@@ -33,7 +33,18 @@ class Package(APIView):
         ratings = query.get("ratings")
         duration = query.get("duration")
         no_of_tests = query.get("no_of_tests")
-        
+        sort_by = query.get("sort")
+
+        if sort_by == "low_to_high":
+            sort_by = 1
+            val = 'offer_price'
+        elif sort_by == "high_to_low":
+            sort_by = -1
+            val = 'offer_price'
+        else:
+            sort_by = -1
+            val = 'recommended'
+
         if lab:
             to_find.update({
                 "lab_name":lab
@@ -59,7 +70,7 @@ class Package(APIView):
                 "no_of_tests":no_of_tests
             })
 
-        data = DB.packages.find(to_find)
+        data = DB.packages.find(to_find).sort(val,sort_by)
 
         return SuccessResponse(data = data, message="Packages")
 
