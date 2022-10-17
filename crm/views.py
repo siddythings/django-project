@@ -70,6 +70,8 @@ class Booking(APIView):
             }})
         return SuccessResponse(data= booking_details, message="Booking Details")
 
+    
+
 class BookingInvoice(APIView):
     def get(self, request):
         requested_data = request.query_params

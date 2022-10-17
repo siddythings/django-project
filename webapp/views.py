@@ -30,7 +30,7 @@ class Package(APIView):
         to_find = {}
         package_id = query.get("package_id")
         if package_id:
-            data = DB.packages.find_one({'_id':ObjectId(package_id)})
+            data = DB.packages.find_one({'_id':ObjectId(package_id)},{'offer_price':1})
             return SuccessResponse(data = data, message="Packages")
         lab = query.get("lab")
         category = query.get("category")
