@@ -23,6 +23,12 @@ class HomepageCategory(APIView):
         data = DB.category.find({})
         return SuccessResponse(data = data, message="Homepage category")
 
+class CityLabs(APIView):
+    def get(self, request):
+        query = request.query_params
+        data = DB.cities.find({'is_active':True},{'_id':0})
+        return SuccessResponse(data = data, message="Homepage category")
+
 
 class Package(APIView):
     def get(self, request):
