@@ -20,7 +20,7 @@ class ScreenPageConfig(APIView):
 class HomepageCategory(APIView):
     def get(self, request):
         query = request.query_params
-        data = DB.category.find({})
+        data = DB.test_category.find({})
         return SuccessResponse(data = data, message="Homepage category")
 
 class CityLabs(APIView):
