@@ -6,4 +6,5 @@ urlpatterns = [
     path('category/', views.HomepageCategory.as_view()),
     path('packages/', views.Package.as_view()),
     path('labs/', views.Labs.as_view()),
+    path('razorpay-key/', views.RazorpayKey.as_view()),
 ]

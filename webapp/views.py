@@ -7,7 +7,7 @@ import json, requests
 import bson
 import pymongo
 
-from application.settings import DB
+from application.settings import DB, RPY_API_KEY
 
 class ScreenPageConfig(APIView):
     def get(self, request):
@@ -19,8 +19,7 @@ class ScreenPageConfig(APIView):
 class HomepageCategory(APIView):
     def get(self, request):
         query = request.query_params
-        data = DB.test_category.find({"order":{"$ne":None}}).limit(14).sort('order',1)
-
+        data = DB.category.find({})
         return SuccessResponse(data = data, message="Homepage category")
 
 
@@ -82,3 +81,15 @@ class Labs(APIView):
         return SuccessResponse(data = data, message="Labs")
 
 
+class RazorpayKey(APIView):
+    # permission_classes_by_action = {
+    #     'GET': [OwnerOnlyPermission],
+    #     'default': [OwnerOnlyPermission]
+    # }
+
+    def get(self, request):
+        key = RPY_API_KEY
+        key = {
+            "key": key
+        }
+        return SuccessResponse(data=key, message="Key fetched successfully", data_status=True)
