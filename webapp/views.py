@@ -6,6 +6,7 @@ from application.responses import SuccessResponse, NoContentResponse, Unprocessa
 import json, requests
 import bson
 import pymongo
+from bson import ObjectId
 
 from application.settings import DB, RPY_API_KEY
 
@@ -27,6 +28,10 @@ class Package(APIView):
     def get(self, request):
         query = request.query_params
         to_find = {}
+        package_id = query.get("package_id")
+        if package_id:
+            data = DB.packages.find_one({'_id':ObjectId(_id.get("$oid"))})
+            return SuccessResponse(data = data, message="Packages")
         lab = query.get("lab")
         category = query.get("category")
         ratings = query.get("ratings")
