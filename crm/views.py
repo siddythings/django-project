@@ -37,15 +37,11 @@ class Booking(APIView):
     
     def put(self, request):
         request_data = request.data
-        _id = request_data.get("_id")
-        if not _id:
-            return BadRequestResponse(message="Somethings Went Wrong!")
-        
-        request_data.pop("_id")
+        booking_id = request_data.get("booking_id")
         request_data.update({
             "updated_at": DatetimeUtils.get_current_time()
         })
-        DB.bookings.update_one({"_id":ObjectId(_id.get("$oid"))},{"$set":request_data})
+        DB.bookings.update_one({"booking_id":booking_id},{"$set":request_data})
         return SuccessResponse(data=request_data, message="Payment Recived")
     
     def get(self, request):
