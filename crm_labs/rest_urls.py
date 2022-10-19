@@ -4,5 +4,5 @@ from crm_labs import rest_views
 
 urlpatterns = [
     path(r'home-dashobard/', rest_views.HomeDashboard.as_view()),
-    # path(r'crm/login/', rest_views.LoginAPIView.as_view()),
+    path(r'booking/', rest_views.BookingAPIView.as_view()),
 ]
