@@ -3,6 +3,7 @@ from random import randint
 import urllib
 import requests
 from rest_framework.views import APIView
+from application.constants import BookingStatus
 
 # GMS Imports
 from application.settings import DB
@@ -52,7 +53,7 @@ class BookingAPIView(APIViewWithAuthentication):
         lab_id = request.headers.get("lab", None)
         
         bookings_update = DB.bookings.update_one({'lab_id': lab_id, 'booking_id': booking_id},{"$set":{
-            "status": request_data.get("status")
+            "status": BookingStatus.PENDING
         }})
         
         if not bookings_update.modified_count:
@@ -78,3 +79,46 @@ class BookingAPIView(APIViewWithAuthentication):
     
     def delete(self, request):
         return SuccessResponse(data=[], message="Bookings")
+
+class PackagesAPIView(APIViewWithAuthentication):
+    def get(self, request):
+        lab_id = request.headers.get("lab", None)
+        packages_list = DB.packages.find({'lab_id':lab_id})
+        return SuccessResponse(data=packages_list, message="Packages")
+    
+    def post(self, request):
+        request_data = request.data
+        lab_id = request.headers.get("lab", None)
+        lab_details = DB.labs.find_one({'id':lab_id},{'name':1,'icon':1})
+        
+        # request_data.update({
+        #     "lab_name": lab_details.get("name"),
+        #     "lab_icon": lab_details.get("icon")
+        # })
+        
+        request_data.update({
+            "lab_name": lab_details.get("name"),
+            "lab_icon": lab_details.get("icon"),
+            "lab_id": lab_id,
+            "offer_price": request_data.get("mrp")
+        })
+        
+        DB.packages.insert_one(request_data)
+        return SuccessResponse(data=request_data, message="Packages")
+
+    def patch(self, request):
+        
+        return SuccessResponse(data=[], message="Packages")
+    
+    def put(self, request):
+        return SuccessResponse(data=[], message="Packages")
+
+class AddOnServices(APIViewWithAuthentication):
+    def get(self, request):
+        add_on_services = DB.add_on_services.find({})
+        return SuccessResponse(data=add_on_services, message="Adon")
+
+class PackageInstructionsAPIView(APIViewWithAuthentication):
+    def get(self, request):
+        package_instructions = DB.package_instructions.find({})
+        return SuccessResponse(data=package_instructions, message="Instructions")

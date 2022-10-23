@@ -31,6 +31,7 @@ class Booking(APIView):
             "booking_id": GeneratorUtils.get_booking_id(),
             "created_at": DatetimeUtils.get_current_time(),
             "updated_at": DatetimeUtils.get_current_time(),
+            "status": "NEW"
         })
         DB.bookings.insert_one(request_data)
         return SuccessResponse(data=request_data, message="Booking")
@@ -39,7 +40,8 @@ class Booking(APIView):
         request_data = request.data
         booking_id = request_data.get("booking_id")
         request_data.update({
-            "updated_at": DatetimeUtils.get_current_time()
+            "updated_at": DatetimeUtils.get_current_time(),
+            "payment_status": "PAID"
         })
         DB.bookings.update_one({"booking_id":booking_id},{"$set":request_data})
         return SuccessResponse(data=request_data, message="Payment Recived")
