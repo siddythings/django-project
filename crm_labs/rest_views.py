@@ -5,9 +5,9 @@ import requests
 from rest_framework.views import APIView
 from application.constants import BookingStatus
 
-# GMS Imports
 from application.settings import DB
 from crm_labs.pipeline import LabCrmPiplineServies
+from crm_labs.services import BookingServices
 from utilities.utility import DatetimeUtils
 from application.responses import SuccessResponse, BadRequestResponse, ResourceNotFoundResponse
 from users.encryptions import EncryptDecrypt, Token
@@ -44,6 +44,7 @@ class BookingAPIView(APIViewWithAuthentication):
         return SuccessResponse(data=bookings_data, message="Bookings")
     
     def post(self, request):
+        # Update Status 
         query = request.query_params
         request_data = request.data
         booking_id = query.get("booking_id")
@@ -63,18 +64,19 @@ class BookingAPIView(APIViewWithAuthentication):
     def patch(self, request):
         query = request.query_params
         request_data = request.data
-        booking_id = query.get("booking_id")
-        if not booking_id:
-            return BadRequestResponse(message="Booking ID Requried!")
+        BookingServices.update_report(request.FILES['file'])
+        # booking_id = query.get("booking_id")
+        # if not booking_id:
+        #     return BadRequestResponse(message="Booking ID Requried!")
         
-        lab_id = request.headers.get("lab", None)
+        # lab_id = request.headers.get("lab", None)
         
-        bookings_update = DB.bookings.update_one({'lab_id': lab_id, 'booking_id': booking_id},{"$set":{
-            "status": request_data.get("status")
-        }})
+        # bookings_update = DB.bookings.update_one({'lab_id': lab_id, 'booking_id': booking_id},{"$set":{
+        #     "status": request_data.get("status")
+        # }})
         
-        if not bookings_update.modified_count:
-            return BadRequestResponse(message="Booking ID Not Found!")
+        # if not bookings_update.modified_count:
+        #     return BadRequestResponse(message="Booking ID Not Found!")
         return SuccessResponse(data=[], message="Bookings")
     
     def delete(self, request):

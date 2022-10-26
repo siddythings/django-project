@@ -38,6 +38,7 @@ class Package(APIView):
         if package_id:
             data = DB.packages.find_one({'_id':ObjectId(package_id)},{'offer_price':1})
             return SuccessResponse(data = data, message="Packages")
+        city = query.get("city")
         lab = query.get("lab","")
         category = query.get("category")
         ratings = query.get("ratings")
@@ -54,7 +55,10 @@ class Package(APIView):
         else:
             sort_by = -1
             val = 'recommended'
-
+        if city:
+            to_find.update({
+                "city":city
+            })
         if lab:
             to_find.update({
                 "lab_name":{"$in":lab.split(",")}
