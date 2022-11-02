@@ -82,7 +82,7 @@
                         </div>
                     </td>
                     <td style="border-left: none;" colspan="4">
-                        <img src="https://cdn.logo.com/hotlink-ok/logo-social.png" alt="Logo" style="width:220px; height: 60px;text-align:right">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/siddythings73-cfead.appspot.com/o/testo-logo.png?alt=media&token=dbe6905c-8aa7-4328-bf6c-37227ef2c00a" alt="Logo" style="width:220px; height: 60px;text-align:right">
                         <div style="font-size: 2.2em; font-weight: bold;padding-top:3px;text-align:right">{{data.bill_name}}</div>
                     </td>
             </tr>
@@ -90,157 +90,44 @@
         <table class="billing-table estimate-details"  style="width: 100%; height: auto">
         <tr>
             <tr>
-                <td colspan="9" style="border-bottom:none"><b></b></td>
-                <td colspan="9" style="border-bottom:none"><b>Invoice Number:</b> {{data.invoice_number}}</td>
+                <td colspan="9" style="border-bottom:none"><b>Customer Name: {{data.customer_details.customer_name}}</b></td>
+                <td colspan="9" style="border-bottom:none"><b>Invoice Number:</b> {{data.booking_id}}</td>
             </tr>
             <tr>
-                <td colspan="9" style="border-bottom:none; border-top:none">{{data.name}}, {{data.workshop_address}}</td>
+                <td colspan="9" style="border-bottom:none; border-top:none"><b>Mobile: </b> +{{data.customer_details.customer_number}}</td>
                 <td  colspan="9" style="border-bottom:none; border-top:none"><b>Invoice Date:</b>{{data.created_at}}</td>
                 <tr>
-                {% if data.gstin %}
-                    <td colspan="9" style="border-bottom:none; border-top:none"><b>GSTIN No:</b> {{data.gstin}}</td>
-                {% else %}
-                    <td colspan="9" style="border-bottom:none; border-top:none"><b</b></td>
-                {% endif %}
+                <td colspan="9" style="border-bottom:none; border-top:none"><b>Address:</b> {{data.address.address}}, {{data.address.city}}</td>
+                
                 <td colspan="9" style="border-bottom:none; border-top:none"><b>Order Date:</b>{{data.created_at}}</td>
 
             </tr>
         </tr>
-        
-            <tr>
-                {% if data.customer_details.address %}
-                    <td colspan="9"style="border-bottom:none"><b>Bill To:</b></td>
-                {% else %}
-                    <td colspan="18"style="border-bottom:none"><b>Bill To:</b></td>
-                {% endif %}
-                {% if data.customer_details.address %}
-                    <td colspan="9" style="border-bottom:none"><b>Bill To:</b></td>
-                {% endif %}
-            </tr>
-            <tr>
-                {% if data.customer_details.address %}
-                    <td colspan="9" style="border-bottom:none; border-top:none"><b>{{data.customer_details.name}}</b><br/>{{data.customer_details.address}}</td>
-                {% else %}
-                    <td colspan="18" style="border-bottom:none; border-top:none"><b>{{data.customer_details.name}}</b></td>
-                {% endif %}
-                {% if data.customer_details.address %}
-                    <td colspan="9" style="border-bottom:none; border-top:none">{{data.customer_details.address}}</td>
-                {% endif %}
-            </tr>
-            {% if data.customer_details.email %}
-            <tr>
-                {% if data.customer_details.email %}
-                    <td colspan="9" style="border-bottom:none; border-top:none"><b>E-Mail:</b>{{data.customer_details.email}}</td>
-                    <td colspan="9" style="border-bottom:none; border-top:none"></td>
-                    {% else %}
-                    <td colspan="9" style="border-bottom:none; border-top:none"></td>
-                    <td colspan="9" style="border-bottom:none; border-top:none"></td>
-                {% endif %}
-            </tr>
-            {% endif %}
 
-            {% if data.customer_details.gstin %}
-            <tr>
-                {% if data.customer_details.gstin %}
-                    <td colspan="9" style="border-top:none"><b>GSTIN No:</b> {{data.customer_details.gstin}}</td>
-                    <td colspan="9" style="border-top:none"><b>GSTIN No:</b> {{data.customer_details.gstin}}</td>
-                    {% else %}
-                    <td colspan="9" style="border-top:none"></td>
-                    <td colspan="9" style="border-top:none"></td>
-                {% endif %}
-            </tr>
-            {% endif %}
-            {% if data.bill_type != "Non Tax Invoice" %}
+            
                 <tr>
-                    <th colspan="1"><b>Sr.No</b></th>
-                    <th colspan="2"><b>HSN</b></th>
-                    <th colspan="2"><b>Description</b></th>
-                    <th colspan="2"><b>Unit Price</b></th>
-                    <th colspan="2"><b>Qty</b></th>
-                    <th colspan="2"><b>Price</b></th>
-                    <th colspan="2"><b>Discount</b></th>
-                    <th colspan="2"><b>Taxable Value</b></th>
-                    <th colspan="1"><b>Tax</b></th>
-                    <th colspan="2"><b>Total</b></th>
+                    <th colspan="6" style="text-align:center"><b>Test Name</b></th>
+                    <th colspan="8" style="text-align:center"><b>Description</b></th>
+                    <th colspan="4" style="text-align:center"><b>Total</b></th>
                 </tr>
-                {% for obj in data.services%}
+                {% for obj in data.package_details%}
                     <tr>
-                        <td colspan="1" style="text-align:center">{{obj.s_no}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.hsn}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.service_name}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.price_per_quantity}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.quantity}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.total_unit_price}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.discount_per_quantity}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.taxable}}</td>
-                        <td colspan="1" style="text-align:center">{{obj.tax_rate}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.total}}</td>
+                        <td colspan="6" style="text-align:center">{{obj.name}}</td>
+                        <td colspan="8" style="text-align:center">{{obj.discription}}</td>
+                        <td colspan="4" style="text-align:center">{{obj.mrp}}</td>
                     </tr>
                 {% endfor %}
-            {% else %}
-                <tr>
-                    <th colspan="2" style="text-align:center"><b>Sr.No</b></th>
-                    <th colspan="2" style="text-align:center"><b>HSN</b></th>
-                    <th colspan="2" style="text-align:center"><b>Description</b></th>
-                    <th colspan="3" style="text-align:center"><b>Unit Price</b></th>
-                    <th colspan="2" style="text-align:center"><b>Discount</b></th>
-                    <th colspan="2" style="text-align:center"><b>Qty</b></th>
-                    <th colspan="2" style="text-align:center"><b>Price</b></th>
-                    <th colspan="3" style="text-align:center"><b>Total</b></th>
-                </tr>
-                {% for obj in data.services%}
-                    <tr>
-                        <td colspan="2" style="text-align:center">{{obj.s_no}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.hsn}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.service_name}}</td>
-                        <td colspan="3" style="text-align:center">{{obj.price_per_quantity}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.discount_per_quantity}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.quantity}}</td>
-                        <td colspan="2" style="text-align:center">{{obj.total_unit_price}}</td>
-                        <td colspan="3" style="text-align:center">{{obj.total}}</td>
-                    </tr>
-                {% endfor %}
-            {% endif %}
+            
         <tr>
-            {% if data.bill_type != "Non Tax Invoice" %}
-                <td colspan="5"><b>Total</b></td>
-                <td colspan="2"></td>
-                <td colspan="2" style="text-align:center">{{data.total_q}}</td>
-                <td colspan="2"></td>
-                <td colspan="2" style="text-align:center">{{data.discount}}</td>
-                <td colspan="2" style="text-align:center">{{data.taxable_value}}</td>
-                <td colspan="1" style="text-align:center">{{data.total_tax}}</td>
-                <td colspan="2" style="text-align:center">{{data.total}}</td>
-            {% else %}
+            
                 <td colspan="6"><b>Total</b></td>
-                <td colspan="3"></td>
-                <td colspan="2" style="text-align:center">{{data.discount}}</td>
-                <td colspan="2" style="text-align:center">{{data.total_q}}</td>
-                <td colspan="2" style="text-align:center"></td>
-                <td colspan="3" style="text-align:center">{{data.total}}</td>
-            {% endif %}
+                <td colspan="8"></td>
+                <td colspan="4" style="text-align:center">{{data.total_cost}}</td>
+
         </tr>
-        {% if data.bill_type != "Non Tax Invoice" %}
-            <tr>
-                <td colspan="9">Taxable Amount</td>
-                <td colspan="9" style="text-align:right">Rs. {{data.taxable_value}}</td>
-            </tr>
-            <tr>
-                <td colspan="9">Discount Amount</td>
-                <td colspan="9" style="text-align:right">Rs. {{data.discount}}</td>
-            </tr>
-            <tr>
-                <td colspan="9">Total Tax</td>
-                <td colspan="9" style="text-align:right">Rs. {{data.total_tax}}</td>
-            </tr>
-            <tr>
-                <td colspan="9">Total Tax (in words)</td>
-                <td colspan="9" style="text-align:right">{{data.taxable_value_number}}</td>
-            </tr>
-        {% endif %}
         <tr>
             <td colspan="9">Invoice Total</td>
-            <td colspan="9" style="text-align:right">Rs. {{data.total}}</td>
+            <td colspan="9" style="text-align:right">Rs. {{data.total_cost}}</td>
         </tr>
         <tr>
             <td colspan="9">Discount Total/Flat Discount</td>
@@ -258,14 +145,14 @@
                 </td>
         </tr>
         </table>
-        <table class="billing-table estimate-details" style="width: 100%; height: auto">
+        {% comment %} <table class="billing-table estimate-details" style="width: 100%; height: auto">
             <tr>
                 <td colspan="18" style="border-bottom:none"><b>Order Remarks</b></td>
             </tr>
             <tr>
                 <td colspan="18" style="border-top:none">Na</td>
             </tr>
-        </table>
+        </table> {% endcomment %}
         
 
     {% block content %}

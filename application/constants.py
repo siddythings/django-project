@@ -16,7 +16,7 @@ def instantiate(cls):
 @instantiate
 class BookingStatus:
     NEW = "NEW"
-    SAMPLE_COLLECTED = "SAMPLE_COLLECTED"
+    SAMPLE_COLLECTED = "SAMPLE COLLECTED"
     OPEN = "OPEN"
     PENDING = "PENDING"
     COMPLETED = "COMPLETED"

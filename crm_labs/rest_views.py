@@ -4,7 +4,7 @@ import urllib
 import requests
 from rest_framework.views import APIView
 from application.constants import BookingStatus
-
+from bson import ObjectId
 from application.settings import DB
 from crm_labs.pipeline import LabCrmPiplineServies
 from crm_labs.services import BookingServices
@@ -47,6 +47,7 @@ class BookingAPIView(APIViewWithAuthentication):
         # Update Status 
         query = request.query_params
         request_data = request.data
+        
         booking_id = query.get("booking_id")
         if not booking_id:
             return BadRequestResponse(message="Booking ID Requried!")
@@ -102,14 +103,21 @@ class PackagesAPIView(APIViewWithAuthentication):
             "lab_name": lab_details.get("name"),
             "lab_icon": lab_details.get("icon"),
             "lab_id": lab_id,
-            "offer_price": request_data.get("mrp")
+            "is_active": False,
+            "offer_price": request_data.get("mrp"),
+            "created_at": DatetimeUtils.get_current_time(),
+            "updated_at": DatetimeUtils.get_current_time()
         })
         
         DB.packages.insert_one(request_data)
         return SuccessResponse(data=request_data, message="Packages")
 
     def patch(self, request):
-        
+        request_data = request.data
+        package_id = request_data.get("_id")
+        request_data.pop("_id")
+        if package_id:
+            DB.packages.update_one({'_id': ObjectId(package_id)},{"$set":request_data})
         return SuccessResponse(data=[], message="Packages")
     
     def put(self, request):

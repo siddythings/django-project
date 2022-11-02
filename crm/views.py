@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from num2words import num2words
 from rest_framework.views import APIView
 from application.responses import SuccessResponse, NoContentResponse, UnprocessableEntityResponse, \
     BadRequestResponse
@@ -76,8 +77,43 @@ class BookingInvoice(APIView):
         if not requested_data.get("booking_id"):
             return BadRequestResponse(message="Booking ID not Found!")
         
+        aggr = [
+            {
+                '$match': {
+                    'booking_id': requested_data.get("booking_id")
+                }
+            }, {
+                '$project': {
+                    '_id': 0
+                }
+            }, {
+                '$lookup': {
+                    'from': 'packages', 
+                    'localField': 'package_id', 
+                    'foreignField': 'package_id', 
+                    'as': 'package_details'
+                }
+            }
+        ]
+
+        booking_details = list(DB.bookings.aggregate(aggr))
+        
+        if not booking_details:
+            return BadRequestResponse(message="Booking ID not Found!")
+        
         template = get_template('invoice.html')
-        html = template.render({'data': ""})
+        booking_details = booking_details[0]
+        total_cost = 0
+        
+        for obj in booking_details.get("package_details"):
+            total_cost += obj.get("mrp")
+
+        booking_details.update({
+            "total_cost": total_cost,
+            "flat_discount":0,
+            "total_number": num2words(total_cost).capitalize()
+        })
+        html = template.render({'data': booking_details})
 
         response = HttpResponse(content_type="application/pdf")
         response['Content-Disposition'] = \
