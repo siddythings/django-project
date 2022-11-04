@@ -7,6 +7,7 @@ import json, requests
 import bson
 import pymongo
 from bson import ObjectId
+from utilities.utility import GeneratorUtils, DatetimeUtils
 from webapp.models import ShopItemsModels
 from application.settings import DB, RPY_API_KEY
 from authentications.permissions import APIViewWithAuthentication
@@ -96,6 +97,14 @@ class Labs(APIView):
 
         return SuccessResponse(data = data, message="Labs")
 
+class WebAppSearch(APIView):
+    def get(self, request):
+        query = request.query_params
+        value = query.get("value")
+        data = DB.packages.find({"$or":[{"category":{"$regex":value,"$options":"i"}},{"name":{"$regex":value,"$options":"i"}}]})
+
+        return SuccessResponse(data = data, message="Search")
+
 
 class RazorpayKey(APIView):
     # permission_classes_by_action = {
@@ -109,6 +118,38 @@ class RazorpayKey(APIView):
             "key": key
         }
         return SuccessResponse(data=key, message="Key fetched successfully", data_status=True)
+
+class DateandBookingSlot(APIViewWithAuthentication):
+    def get(self, request):
+        rsp = DatetimeUtils.get_today_slot()
+        all_slot = DatetimeUtils.get_dated_slot()
+        all_slot.insert(0, rsp)
+        return SuccessResponse(data=all_slot, message="Date and Slot")
+
+class UserAddress(APIViewWithAuthentication):
+    def get(self, request):
+        user_id = request.GET.get('sub')
+        address = DB.user_address.find({'user_id':user_id})
+        return SuccessResponse(data=address,message="User Address")
+    
+    def post(self, request):
+        requested_data = request.data
+        user_id = request.GET.get('sub')
+        requested_data.update({
+            "address_id": GeneratorUtils.get_application_id(),
+            "user_id": user_id,
+            "created_at": DatetimeUtils.get_current_time()
+        })
+        DB.user_address.insert_one(requested_data)
+        return SuccessResponse(data=requested_data,message="Address Added")
+    
+    def patch(self, request):
+        requested_data = request.data
+        user_id = request.GET.get('sub')
+        user_address_update = DB.user_address.update_one({'address_id':requested_data.get("address_id")},{"$set":requested_data})
+        if user_address_update.modified_count:
+            return SuccessResponse(data=requested_data,message="Address Updated")
+        return BadRequestResponse(message="Address Failed to Update")
 
 class ShopAddToCart(APIViewWithAuthentication):
     # permission_classes_by_action = {
@@ -130,48 +171,49 @@ class ShopAddToCart(APIViewWithAuthentication):
 
 class GetCart(APIViewWithAuthentication):
     def get(self, request):
-        aggr = [
-            {
-                '$match': {
-                    'created_by_id': '4866f3c4e2394be5b02e55cd7d3e2ead', 
-                    'ordered': False
-                }
-            }, {
-                '$lookup': {
-                    'from': 'packages', 
-                    'localField': 'product_id', 
-                    'foreignField': 'package_id', 
-                    'as': 'package_details'
-                }
-            }, {
-                '$unwind': {
-                    'path': '$package_details'
-                }
-            }, {
-                '$group': {
-                    '_id': None, 
-                    'mrp_total': {
-                        '$sum': '$package_details.mrp'
-                    }, 
-                    'offer_price_total': {
-                        '$sum': '$package_details.offer_price'
-                    }, 
-                    'items': {
-                        '$push': {
-                            'package_name': '$package_details.name', 
-                            'discription': '$package_details.discription', 
-                            'lab_name': '$package_details.lab_name', 
-                            'offer_price': '$package_details.offer_price', 
-                            'mrp': '$package_details.mrp', 
-                            'instruction': '$package_details.instruction'
-                        }
-                    }
-                }
-            }
-        ]
-        cart = list(DB.shop_cart_items.aggregate(aggr))
-        
-        if cart:
-            cart = cart[0]
+        user_id = request.GET.get('sub')
+        cart = ShopItemsModels.get_cart(user_id)
         
         return SuccessResponse(data=cart, message="Get Cart", data_status=True)
+
+class Checkout(APIViewWithAuthentication):
+    def post(self, request):
+        request_data = request.data
+        user_id = request.GET.get('sub')
+        cart = request_data
+        customer_details = request_data.get("customer_details")
+        address = request_data.get("address")
+        
+        # if not customer_details:
+        #     return BadRequestResponse(message="Customer Details Not Found")
+        # if not address:
+        #     return BadRequestResponse(message="Address Not Found")
+        order_id = GeneratorUtils.get_order_id()
+        cart.update({
+            "created_by_id": user_id,
+            "order_id": order_id,
+            "payment_status": "PAID" if cart.get("payment_type","") == "online" else "UNPAID"
+        })
+        
+        for obj in cart.get("items",[]):
+            obj.update({
+                "user_id": user_id,
+                "created_at": DatetimeUtils.get_current_time(),
+                "booking_id": GeneratorUtils.get_booking_id(),
+                "status": "NEW",
+                "order_id": order_id,
+                "payment_status": "PAID" if cart.get("payment_type","") == "online" else "UNPAID"
+            })
+        
+        if  cart.get("items",[]):
+            cart.pop('_id')
+            DB.orders.insert_one(cart)
+            DB.bookings.insert_many(cart.get("items",[]))
+            DB.shop_cart_items.update_many({'created_by_id':user_id, 'ordered': False},{'$set':{'ordered': True}})
+        return SuccessResponse(data={}, message="Order Placed", data_status=True)
+
+class OrderHistory(APIViewWithAuthentication):
+    def get(self, request):
+        user_id = request.GET.get('sub')
+        orders = DB.orders.find({'created_by_id': user_id})
+        return SuccessResponse(data= orders,message="Order History")

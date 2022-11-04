@@ -20,6 +20,8 @@ from jsonschema.exceptions import ValidationError
 from pathlib import Path
 from datetime import date, datetime, timedelta, time
 from application import settings
+from application import constants
+
 CACHE_TTL = 60 * 60 *24
 
 
@@ -60,6 +62,40 @@ class DatetimeUtils():
     @classmethod
     def get_current_time(cls, month=1, year=2020):
         return datetime.now()
+    
+    @classmethod
+    def get_today_slot(cls, month=1, year=2020):
+        date = datetime.utcnow() + timedelta(hours=7 , minutes=30)
+        time_now = date.hour
+        slot = []
+        for obj in constants.SLOT_HOURS:
+            if int(time_now) < obj.get("time"):
+                slot.append(obj.get("slot"))
+        
+        rsp = {
+            "date": str(datetime.now().strftime("%d")) + " " + 
+            str(datetime.now().strftime("%b")) + " (" 
+            +str(datetime.now().strftime("%a")) + ")",
+            "slot": slot
+        }
+
+        return rsp
+
+    @classmethod
+    def get_dated_slot(cls, month=1, year=2020):
+        date_slot = []
+
+        for date in range(1,4):
+            date_day = datetime.utcnow() + timedelta(date)
+            rsp = {
+                "date": str(date_day.strftime("%d")) + " " + 
+                    str(date_day.strftime("%b")) + " (" 
+                    +str(date_day.strftime("%a")) + ")",
+                "slot": constants.ALL_SLOTS
+            }
+            date_slot.append(rsp)
+
+        return date_slot
 
 
 class GeneratorUtils():
@@ -75,5 +111,15 @@ class GeneratorUtils():
     def get_user_id(cls, month=1, year=2020):
         
         return uuid.uuid4().hex
+        
+    @classmethod
+    def get_order_id(cls, month=1, year=2020):
+        
+        return str(uuid.uuid4().hex).upper()
+        
+    @classmethod
+    def get_application_id(cls, month=1, year=2020):
+        
+        return str(uuid.uuid4().hex).upper()
         
 
