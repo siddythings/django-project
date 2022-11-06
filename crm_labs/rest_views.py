@@ -47,15 +47,14 @@ class BookingAPIView(APIViewWithAuthentication):
         # Update Status 
         query = request.query_params
         request_data = request.data
-        
-        booking_id = query.get("booking_id")
+        booking_id = request_data.get("booking_id")
         if not booking_id:
             return BadRequestResponse(message="Booking ID Requried!")
         
         lab_id = request.headers.get("lab", None)
         
         bookings_update = DB.bookings.update_one({'lab_id': lab_id, 'booking_id': booking_id},{"$set":{
-            "status": BookingStatus.PENDING
+            "status": request_data.get("status")
         }})
         
         if not bookings_update.modified_count:
@@ -65,16 +64,28 @@ class BookingAPIView(APIViewWithAuthentication):
     def patch(self, request):
         query = request.query_params
         request_data = request.data
-        BookingServices.update_report(request.FILES['file'])
+        lab_id = request.headers.get("lab", None)
+        booking_id = request_data.get("booking_id",[])
+        report_file = request.FILES['file']
+        
+        if not booking_id:
+            return BadRequestResponse(message="Booking ID Not Found!")
+        
+        if not report_file:
+            return BadRequestResponse(message="File Not Found!")
+        
+        pdf_url = BookingServices.update_report(booking_id, report_file)
+        print(pdf_url)
         # booking_id = query.get("booking_id")
         # if not booking_id:
         #     return BadRequestResponse(message="Booking ID Requried!")
         
         # lab_id = request.headers.get("lab", None)
         
-        # bookings_update = DB.bookings.update_one({'lab_id': lab_id, 'booking_id': booking_id},{"$set":{
-        #     "status": request_data.get("status")
-        # }})
+        bookings_update = DB.bookings.update_one({'lab_id': lab_id, 'booking_id': booking_id},{"$set":{
+            "status": "COMPLETED",
+            "report_url": pdf_url
+        }})
         
         # if not bookings_update.modified_count:
         #     return BadRequestResponse(message="Booking ID Not Found!")

@@ -50,7 +50,7 @@ class ShopItemsClass:
                     'items': {
                         '$push': {
                             'product_id': '$product_id', 
-                            'package_name': '$package_details.name', 
+                            'package': '$package_details.name', 
                             'discription': '$package_details.discription', 
                             'lab_name': '$package_details.lab_name', 
                             'lab_id': '$package_details.lab_id', 

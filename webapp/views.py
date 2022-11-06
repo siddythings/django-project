@@ -11,7 +11,7 @@ from utilities.utility import GeneratorUtils, DatetimeUtils
 from webapp.models import ShopItemsModels
 from application.settings import DB, RPY_API_KEY
 from authentications.permissions import APIViewWithAuthentication
-
+from webapp.pipelines import WebAppPipeline
 class ScreenPageConfig(APIView):
     def get(self, request):
         query = request.query_params
@@ -215,5 +215,6 @@ class Checkout(APIViewWithAuthentication):
 class OrderHistory(APIViewWithAuthentication):
     def get(self, request):
         user_id = request.GET.get('sub')
-        orders = DB.orders.find({'created_by_id': user_id})
+        pipeline = WebAppPipeline.order_history(user_id)
+        orders = DB.orders.aggregate(pipeline)
         return SuccessResponse(data= orders,message="Order History")
